@@ -1,12 +1,26 @@
+import os
+from dotenv import load_dotenv
 import requests
 from datetime import datetime, timedelta
 import time  # Import the time module
 
-url = ""
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the URL and station ID from environment variables
+url = os.getenv("APRSWORLD_URL")
+station_id = os.getenv("STATION_ID")
+
+# Validate that the required environment variables are set
+if not url:
+    raise ValueError("APRSWORLD_URL is not set in the environment variables")
+if not station_id:
+    raise ValueError("STATION_ID is not set in the environment variables")
+
 
 # Define the start and end dates
-start_date = datetime(2018, 1, 1)
-end_date = datetime(2025, 3, 31)
+start_date = datetime(2017, 12, 1)
+end_date = datetime(2025, 4, 16)
 
 # Function to generate half-month date ranges
 def generate_date_ranges(start, end):
@@ -29,8 +43,8 @@ def generate_date_ranges(start, end):
 # Iterate through the date ranges and make requests
 for start, stop in generate_date_ranges(start_date, end_date):
     params = {
-        "station_id": "",
-        "view": "",
+        "station_id": station_id,
+        "view": f"view_{station_id}",
         "start_date": start.strftime("%Y-%m-%d"),
         "start_date_dp": "1",
         "start_date_year_start": "2000",
@@ -60,5 +74,5 @@ for start, stop in generate_date_ranges(start_date, end_date):
     else:
         print(f"Failed to retrieve data for {start} to {stop}: {response.status_code}")
 
-    time.sleep(10)  # Add a 10-second delay between requests
+    time.sleep(2)  # Add a 2-second delay between requests
 
